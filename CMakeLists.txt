@@ -39,7 +39,10 @@ add_executable(pacmanpro main.c
         "game map.c"
         "game map.h"
         AddObject.c
-        AddObject.h)
+        AddObject.h
+        leaderboard.c
+        leaderboard.h
+        )
 
 # set the include directory
 target_include_directories(pacmanpro PRIVATE ${raylib_INCLUDE_DIRS})
