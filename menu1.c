@@ -53,8 +53,10 @@ void show_menu()
     loadTexture();
     DrawText("Pac Man", screenwidth / 2 - MeasureText("Pac Man", 100) / 2, screenheight / 2 - 150, 100, YELLOW);
     DrawText("PLAY", screenwidth / 2 - MeasureText("PLAY", 60) / 2, screenheight / 2, 60, option1 == Play ? RED : WHITE);
-    DrawText("RECORDS", screenwidth / 2 - MeasureText("RECORDS", 60) / 2, screenheight / 2 + 100, 60, option1 == Records ? RED : WHITE);
-    DrawText("EXIT", screenwidth / 2 - MeasureText("EXIT", 60) / 2, screenheight / 2 + 200, 60, option1 == Exit ? RED : WHITE);
+    DrawText("RECORDS", screenwidth / 2 - MeasureText("RECORDS", 60) / 2, screenheight / 2 + 100, 60,
+             option1 == Records ? RED : WHITE);
+    DrawText("EXIT", screenwidth / 2 - MeasureText("EXIT", 60) / 2, screenheight / 2 + 200, 60,
+             option1 == Exit ? RED : WHITE);
     Draw(redghost, 50, 50);
     Draw(yellowghost, 200, 50);
     Draw(blueghost, 350, 50);
@@ -63,7 +65,34 @@ void show_menu()
     Draw(straw, 900, 680);
     Draw(apple, 750, 700);
 }
-void handle_options(menu current_option)
+
+// Display leaderboard
+void displayScoresGraphically(Score scores[])
+{
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        DrawText("Leaderboard:", screenwidth / 2 - MeasureText("Leaderboard:", 50) / 2, 100, 50, YELLOW);
+        for (int i = 0; i < MAX_SCORES && scores[i].score > 0; i++)
+        {
+            char scoreLine[100];
+            snprintf(scoreLine, sizeof(scoreLine), "%s: %d (%s)", scores[i].name, scores[i].score, scores[i].timestamp);
+            DrawText(scoreLine, screenwidth / 2 - MeasureText(scoreLine, 30) / 2, 200 + i * 40, 30, WHITE);
+        }
+
+        DrawText("Press ESC to return", screenwidth / 2 - MeasureText("Press ESC to return", 30) / 2, screenheight - 100,
+                 30, RED);
+
+        EndDrawing();
+
+        if (IsKeyPressed(KEY_ESCAPE))
+            break;
+    }
+}
+
+void handle_options(menu current_option, Score scores[])
 {
     switch (current_option)
     {
@@ -71,6 +100,7 @@ void handle_options(menu current_option)
         showmovement();
         break;
     case Records:
+        displayScoresGraphically(scores);
         break;
     case Exit:
         CloseWindow();
@@ -79,7 +109,7 @@ void handle_options(menu current_option)
         break;
     }
 }
-void select_option()
+void select_option(Score scores[])
 {
     if (IsKeyPressed(KEY_DOWN))
     {
@@ -91,6 +121,6 @@ void select_option()
     }
     else if (IsKeyPressed(KEY_ENTER))
     {
-        handle_options(option1);
+        handle_options(option1, scores);
     }
 }

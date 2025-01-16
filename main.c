@@ -3,21 +3,28 @@
 #include <stdlib.h>
 #include "menu1.h"
 #include "AddObject.h"
+#include "leaderboard.h"
 
-#define screenwidth  1200
-#define screenheight  900
-
- int main (){
-    InitWindow(screenwidth , screenheight ,"pacman_menu");
+#define SCREEN_WIDTH 1200
+#define SCREEN_HEIGHT 900
+Score scores[MAX_SCORES] = {0}; // Global scores array
+int main()
+{
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "pacman_menu");
     SetTargetFPS(60);
-     while (!WindowShouldClose()) {
-         select_option();
-         BeginDrawing();
-         show_menu();
-         EndDrawing();
-     }
 
+    // Load scores at the start of the program
+    loadScores(scores);
+
+    while (!WindowShouldClose())
+    {
+        select_option();
+        BeginDrawing();
+        show_menu();
+        EndDrawing();
+    }
 
     CloseWindow();
-}
 
+    return 0;
+}
