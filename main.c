@@ -18,11 +18,13 @@ int main()
 
     while (!WindowShouldClose())
     {
-        select_option();
+        select_option(scores);
         BeginDrawing();
         show_menu();
         EndDrawing();
     }
+
+    saveScores(scores); // Save scores before exiting
 
     CloseWindow();
 

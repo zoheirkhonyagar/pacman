@@ -42,6 +42,8 @@ add_executable(pacmanpro main.c
         AddObject.h
         leaderboard.c
         leaderboard.h
+        logger.c
+        logger.h
         )
 
 # set the include directory

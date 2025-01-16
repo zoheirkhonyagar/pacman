@@ -3,6 +3,10 @@
 #include "AddObject.h"
 #include <stdio.h>
 #include "leaderboard.h"
+
+#include "logger.h"
+
+extern Score scores[]; // Access global scores array
 typedef enum
 {
     Play,
@@ -75,20 +79,52 @@ void displayScoresGraphically(Score scores[])
         ClearBackground(BLACK);
 
         DrawText("Leaderboard:", screenwidth / 2 - MeasureText("Leaderboard:", 50) / 2, 100, 50, YELLOW);
-        for (int i = 0; i < MAX_SCORES && scores[i].score > 0; i++)
+
+        int hasScores = 0;
+        for (int i = 0; i < MAX_SCORES; i++)
         {
-            char scoreLine[100];
-            snprintf(scoreLine, sizeof(scoreLine), "%s: %d (%s)", scores[i].name, scores[i].score, scores[i].timestamp);
-            DrawText(scoreLine, screenwidth / 2 - MeasureText(scoreLine, 30) / 2, 200 + i * 40, 30, WHITE);
+            if (scores[i].score > 0)
+            {
+                hasScores = 1;
+                break;
+            }
         }
 
-        DrawText("Press ESC to return", screenwidth / 2 - MeasureText("Press ESC to return", 30) / 2, screenheight - 100,
-                 30, RED);
+        if (hasScores)
+        {
+            for (int i = 0; i < MAX_SCORES && scores[i].score > 0; i++)
+            {
+                char scoreLine[100];
+                snprintf(scoreLine, sizeof(scoreLine), "%s: %d (%s)",
+                         scores[i].name, scores[i].score, scores[i].timestamp);
+                DrawText(scoreLine,
+                         screenwidth / 2 - MeasureText(scoreLine, 30) / 2,
+                         200 + i * 40,
+                         30,
+                         WHITE);
+            }
+        }
+        else
+        {
+            DrawText("No scores available",
+                     screenwidth / 2 - MeasureText("No scores available", 30) / 2,
+                     screenheight / 2,
+                     30,
+                     RED);
+        }
+
+        DrawText("Press ESC to return",
+                 screenwidth / 2 - MeasureText("Press ESC to return", 30) / 2,
+                 screenheight - 100,
+                 30,
+                 RED);
 
         EndDrawing();
 
         if (IsKeyPressed(KEY_ESCAPE))
+        {
             break;
+        }
     }
 }
 

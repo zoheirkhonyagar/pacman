@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.ts": "typescript",
+    "game map.h": "c",
+    "leaderboard.h": "c"
+  }
+}
