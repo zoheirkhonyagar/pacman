@@ -46,6 +46,7 @@ add_executable(pacmanpro main.c
         logger.h
         third-party/cJSON/cJSON.c
         third-party/cJSON/cJSON_Utils.c
+        audio.c
         )
 
 # set the include directory

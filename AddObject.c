@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include "leaderboard.h"
+#include "audio.h"
 
 #define screenwidth 1200
 #define screenheight 900
@@ -149,8 +150,9 @@ void checkStarCollision()
             Rectangle starRect = {star[i].starpos.x, star[i].starpos.y, 16, 16};
             if (CheckCollisionRecs(pacmanRect, starRect))
             {
-                star[i].eaten = true; // Mark the star as eaten
-                score += 10;          // Increase score
+                star[i].eaten = true;   // Mark the star as eaten
+                score += 10;            // Increase score
+                PlaySound(pelletSound); // Play pellet collection sound
             }
         }
     }
@@ -520,6 +522,7 @@ void showmovement(Score scores[], const char *playerName)
         {
             lives--;                                 // Decrease lives if there is a collision
             pacmanpos = (Vector2){30 * 19, 30 * 20}; // Reset Pacman's position to the start
+            PlaySound(collisionSound);               // Play collision sound
         }
         checkStarCollision();
         replaceStars();
@@ -547,6 +550,8 @@ void showmovement(Score scores[], const char *playerName)
 
     if (lives == 0)
     {
+
+        PlaySound(gameOverSound); // Play game-over sound once
 
         addScore(scores, playerName, score); // Add the final score to the leaderboard
         saveScores(scores);

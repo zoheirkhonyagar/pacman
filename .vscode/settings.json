@@ -3,6 +3,7 @@
     "*.ts": "typescript",
     "game map.h": "c",
     "leaderboard.h": "c",
-    "cjson.h": "c"
+    "cjson.h": "c",
+    "audio.h": "c"
   }
 }
