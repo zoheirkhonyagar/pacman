@@ -3,6 +3,7 @@
 #include "game map.h"
 #include <time.h>
 #include <stdbool.h>
+#include "leaderboard.h"
 
 #define screenwidth 1200
 #define screenheight 900
@@ -476,7 +477,7 @@ void movepac()
     }
 }
 
-void showmovement()
+void showmovement(Score scores[], const char *playerName)
 {
     initializeStars();
     initializeFruit();
@@ -546,6 +547,9 @@ void showmovement()
 
     if (lives == 0)
     {
+
+        addScore(scores, playerName, score); // Add the final score to the leaderboard
+        saveScores(scores);
 
         while (!WindowShouldClose())
         {

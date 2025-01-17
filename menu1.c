@@ -133,7 +133,7 @@ void handle_options(menu current_option, Score scores[])
     switch (current_option)
     {
     case Play:
-        showmovement();
+        showmovement(scores, "ZOHEIR");
         break;
     case Records:
         displayScoresGraphically(scores);
