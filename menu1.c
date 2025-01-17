@@ -5,6 +5,7 @@
 #include "leaderboard.h"
 
 #include "logger.h"
+char name[50];
 
 extern Score scores[]; // Access global scores array
 typedef enum
@@ -127,14 +128,54 @@ void displayScoresGraphically(Score scores[])
         }
     }
 }
+void getPlayerName()
+{
+    int textLength = 0;
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(BLACK);
 
+        // Display prompt to enter name
+        DrawText("Enter your name:", screenwidth / 2 - MeasureText("Enter your name:", 50) / 2, screenheight / 2 - 150, 50, DARKGREEN);
+        DrawText(name, screenwidth / 2 - MeasureText(name, 30) / 2, screenheight / 2, 30, RAYWHITE);
+
+        // Input name by capturing keyboard input
+        if (textLength < 49)
+        {
+            if (IsKeyPressed(KEY_BACKSPACE))
+            {
+                textLength--;
+                name[textLength] = '\0'; // Remove last character
+            }
+            else
+            {
+                char key = GetCharPressed();
+                if (key > 0)
+                {
+                    name[textLength] = key;
+                    textLength++;
+                }
+            }
+        }
+
+        // If Enter is pressed, start the game
+        if (IsKeyPressed(KEY_ENTER) && textLength > 0)
+        {
+            break; // Proceed to game once Enter is pressed
+        }
+
+        EndDrawing();
+    }
+}
 void handle_options(menu current_option, Score scores[])
 {
     switch (current_option)
     {
     case Play:
         // TODO: pass the player name here
-        showmovement(scores, "ZOHEIR");
+        getPlayerName();
+        showmovement(scores, name);
         break;
     case Records:
         displayScoresGraphically(scores);

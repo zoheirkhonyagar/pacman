@@ -13,6 +13,8 @@ typedef enum
 void loadTexture();
 void Draw();
 void show_menu();
+void getPlayerName();
+
 void handle_options(menu current_option);
 void select_option(Score scores[]);
 #endif // PACMANPRO_MENU1_H
