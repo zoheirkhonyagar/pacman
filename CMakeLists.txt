@@ -44,6 +44,8 @@ add_executable(pacmanpro main.c
         leaderboard.h
         logger.c
         logger.h
+        third-party/cJSON/cJSON.c
+        third-party/cJSON/cJSON_Utils.c
         )
 
 # set the include directory

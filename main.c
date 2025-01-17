@@ -24,7 +24,7 @@ int main()
         EndDrawing();
     }
 
-    saveScores(scores); // Save scores before exiting
+    saveScores(scores, MAX_SCORES); // Save scores before exiting
 
     CloseWindow();
 

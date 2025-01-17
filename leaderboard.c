@@ -3,8 +3,8 @@
 #include <string.h>
 #include <time.h>
 #include "leaderboard.h"
-#include <stdarg.h>
 #include "logger.h"
+#include "third-party/cJSON/cJSON.h"
 
 void loadScores(Score scores[])
 {
@@ -21,40 +21,86 @@ void loadScores(Score scores[])
   if (!file)
   {
     // File doesn't exist, create an empty one
-    logToFile("No scores file found. Initializing empty scores.\n");
-    saveScores(scores); // Save the initialized empty scores to a file
+    logToFile("No scores file found. Initializing empty scores.");
+    saveScores(scores, MAX_SCORES); // Save the initialized empty scores to a file
     return;
   }
 
-  // Load scores from the file
-  for (int i = 0; i < MAX_SCORES && !feof(file); i++)
+  // Load scores from the JSON file
+  fseek(file, 0, SEEK_END);
+  long fileSize = ftell(file);
+  rewind(file);
+
+  char *fileContent = malloc(fileSize + 1);
+  if (!fileContent)
   {
-    fscanf(file, "%49[^,],%d,%19[^\n]\n", scores[i].name, &scores[i].score, scores[i].timestamp);
-    printf("Loaded score: %s - %d (%s)\n", scores[i].name, scores[i].score, scores[i].timestamp);
+    logToFile("Error: Memory allocation failed for file content.");
+    fclose(file);
+    return;
   }
 
+  fread(fileContent, 1, fileSize, file);
+  fileContent[fileSize] = '\0';
   fclose(file);
+
+  cJSON *jsonArray = cJSON_Parse(fileContent);
+  free(fileContent);
+
+  if (!jsonArray)
+  {
+    logToFile("Error: Failed to parse JSON content.");
+    return;
+  }
+
+  int i = 0;
+  cJSON *jsonScore;
+  cJSON_ArrayForEach(jsonScore, jsonArray)
+  {
+    cJSON *name = cJSON_GetObjectItemCaseSensitive(jsonScore, "name");
+    cJSON *score = cJSON_GetObjectItemCaseSensitive(jsonScore, "score");
+    cJSON *timestamp = cJSON_GetObjectItemCaseSensitive(jsonScore, "timestamp");
+
+    if (cJSON_IsString(name) && cJSON_IsNumber(score) && cJSON_IsString(timestamp))
+    {
+      strncpy(scores[i].name, name->valuestring, sizeof(scores[i].name) - 1);
+      scores[i].score = score->valueint;
+      strncpy(scores[i].timestamp, timestamp->valuestring, sizeof(scores[i].timestamp) - 1);
+      i++;
+    }
+    if (i >= MAX_SCORES)
+      break;
+  }
+
+  cJSON_Delete(jsonArray);
 }
 
-void saveScores(Score scores[])
+void saveScores(Score scores[], int count)
 {
+  cJSON *jsonArray = cJSON_CreateArray();
+
+  for (int i = 0; i < count; i++)
+  {
+    cJSON *jsonScore = cJSON_CreateObject();
+    cJSON_AddStringToObject(jsonScore, "name", scores[i].name);
+    cJSON_AddNumberToObject(jsonScore, "score", scores[i].score);
+    cJSON_AddStringToObject(jsonScore, "timestamp", scores[i].timestamp);
+    cJSON_AddItemToArray(jsonArray, jsonScore);
+  }
+
+  char *jsonString = cJSON_Print(jsonArray);
   FILE *file = fopen("scores.json", "w");
-  if (!file)
+  if (file)
   {
-    printf("Error: Unable to save scores to file.\n");
-    return;
+    fputs(jsonString, file);
+    fclose(file);
+  }
+  else
+  {
+    logToFile("Error: Unable to open scores.json for writing.");
   }
 
-  for (int i = 0; i < MAX_SCORES; i++)
-  {
-    if (scores[i].score > 0)
-    { // Only save scores greater than 0
-      fprintf(file, "%s,%d,%s\n", scores[i].name, scores[i].score, scores[i].timestamp);
-    }
-  }
-
-  fclose(file);
-  printf("Scores saved successfully.\n");
+  cJSON_Delete(jsonArray);
+  free(jsonString);
 }
 
 void addScore(Score scores[], const char *name, int score)
