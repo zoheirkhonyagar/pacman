@@ -133,6 +133,7 @@ void handle_options(menu current_option, Score scores[])
     switch (current_option)
     {
     case Play:
+        // TODO: pass the player name here
         showmovement(scores, "ZOHEIR");
         break;
     case Records:
